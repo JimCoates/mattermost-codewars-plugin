@@ -4,10 +4,13 @@ import { DataTable } from "primereact/datatable";
 import React, { useEffect, useState } from "react";
 import { useClan } from "../queries";
 import { testKata } from "./TestKata";
+import "../App.css";
+import { Dropdown } from "primereact/dropdown";
+import LanguageTableCell from "./LanguageTableCell";
 
-interface TableData {
+export interface TableData {
 	user: string;
-	completed: KataMetadata[];
+	completed: KataMetadata | undefined;
 }
 
 const Submissions = () => {
@@ -24,11 +27,19 @@ const Submissions = () => {
 	}, []);
 
 	const solutionTemplate = (rowData: TableData) => {
-		if (rowData.completed.length > 0) {
-			return <div>{rowData.completed[0].name}</div>;
+		if (rowData.completed !== undefined) {
+			return <div className={"outofstock"}>completed</div>;
 		} else {
 			return <div>Is scared to try the kata</div>;
 		}
+	};
+
+	const completedLanguageTemplate = (rowData: TableData) => {
+		return rowData.completed !== undefined ? (
+			<LanguageTableCell data={rowData.completed} />
+		) : (
+			<div></div>
+		);
 	};
 
 	async function getTableData() {
@@ -44,16 +55,17 @@ const Submissions = () => {
 									"/code-challenges/completed"
 							)
 							.then((res) => res.data)
-					).data.filter((kata) => kata.id === testKata.id),
+					).data.find((kata) => kata.id === testKata.id),
 				};
 			})
 		);
 	}
 
 	return (
-		<DataTable value={tableData}>
+		<DataTable className={"submissions"} sortField="slug" value={tableData}>
 			<Column field="user"></Column>
 			<Column field="slug" body={solutionTemplate} />
+			<Column field="languages" body={completedLanguageTemplate} />
 		</DataTable>
 	);
 };
