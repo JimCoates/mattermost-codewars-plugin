@@ -1,7 +1,6 @@
 import { Button } from "primereact/button";
 import { Dropdown, DropdownChangeParams } from "primereact/dropdown";
 import React, { useState } from "react";
-import { TableData } from "./Submissions";
 import { testKata } from "./TestKata";
 
 interface Props {

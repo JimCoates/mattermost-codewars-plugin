@@ -34,10 +34,21 @@ const LeaderBoard = () => {
 				<ProgressSpinner />
 			) : (
 				<DataTable value={tableData}>
-					<Column field="rank" body={rankTemplate}></Column>
-					<Column field="username" body={userTemplate}></Column>
-					<Column field="honor"></Column>
-					<Column field="score"></Column>
+					<Column
+						field="rank"
+						header="Rank"
+						sortable
+						body={rankTemplate}
+					></Column>
+					<Column
+						field="username"
+						header="User"
+						filter
+						sortable
+						body={userTemplate}
+					></Column>
+					<Column field="honor" header="Honor" sortable></Column>
+					<Column field="score" header="Score" sortable></Column>
 				</DataTable>
 			)}
 		</div>

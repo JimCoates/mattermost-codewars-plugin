@@ -41,3 +41,11 @@
   font-weight: 700;
   color: #4BB543;
 }
+
+.sticky-nav .p-tabview-nav {
+  position: sticky
+}
+
+.p-dialog .p-dialog-content {
+  overflow-y: hidden;
+}

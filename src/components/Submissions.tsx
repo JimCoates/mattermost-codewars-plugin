@@ -5,12 +5,12 @@ import React, { useEffect, useState } from "react";
 import { useClan } from "../queries";
 import { testKata } from "./TestKata";
 import "../App.css";
-import { Dropdown } from "primereact/dropdown";
 import LanguageTableCell from "./LanguageTableCell";
 
 export interface TableData {
 	user: string;
-	completed: KataMetadata | undefined;
+	completed: boolean;
+	solution: KataMetadata | undefined;
 }
 
 const Submissions = () => {
@@ -26,46 +26,59 @@ const Submissions = () => {
 		getData();
 	}, []);
 
-	const solutionTemplate = (rowData: TableData) => {
-		if (rowData.completed !== undefined) {
+	const completedTemplate = (rowData: TableData) => {
+		if (rowData.completed) {
 			return <div className={"outofstock"}>completed</div>;
 		} else {
 			return <div>Is scared to try the kata</div>;
 		}
 	};
 
-	const completedLanguageTemplate = (rowData: TableData) => {
-		return rowData.completed !== undefined ? (
-			<LanguageTableCell data={rowData.completed} />
+	const solutionTemplate = (rowData: TableData) => {
+		return rowData.solution !== undefined ? (
+			<LanguageTableCell data={rowData.solution} />
 		) : (
 			<div></div>
 		);
 	};
 
+	async function getKataMetadata(
+		user: UserData
+	): Promise<KataMetadata | undefined> {
+		return (
+			await axios
+				.get<UserKata>(
+					"https://www.codewars.com/api/v1/users/" +
+						user.username +
+						"/code-challenges/completed"
+				)
+				.then((res) => res.data)
+		).data.find((kata) => kata.id === testKata.id);
+	}
+
 	async function getTableData() {
 		return Promise.all(
 			users.data!.data.map(async (user) => {
+				const metadata = await getKataMetadata(user);
 				return {
 					user: user.username,
-					completed: (
-						await axios
-							.get<UserKata>(
-								"https://www.codewars.com/api/v1/users/" +
-									user.username +
-									"/code-challenges/completed"
-							)
-							.then((res) => res.data)
-					).data.find((kata) => kata.id === testKata.id),
+					completed: Boolean(metadata),
+					solution: metadata,
 				};
 			})
 		);
 	}
 
 	return (
-		<DataTable className={"submissions"} sortField="slug" value={tableData}>
-			<Column field="user"></Column>
-			<Column field="slug" body={solutionTemplate} />
-			<Column field="languages" body={completedLanguageTemplate} />
+		<DataTable className={"submissions"} value={tableData}>
+			<Column field="user" header="User" sortable></Column>
+			<Column
+				field="completed"
+				header="Completed"
+				sortable
+				body={completedTemplate}
+			/>
+			<Column field="solution" header="Solution" body={solutionTemplate} />
 		</DataTable>
 	);
 };

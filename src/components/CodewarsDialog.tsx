@@ -6,6 +6,9 @@ import { TabView, TabPanel } from "primereact/tabview";
 import LeaderBoard from "./CodewarsLeaderboard";
 import CodewarsKata from "./CodewarsKata";
 import Submissions from "./Submissions";
+import { ScrollPanel } from "primereact/scrollpanel";
+
+import "../App.css";
 
 interface Props {
 	show: boolean;
@@ -31,21 +34,33 @@ const CodewarsDialog = (props: Props) => {
 		<Dialog
 			header={Header}
 			visible={props.show}
-			style={{ width: "50vw", height: "75vh" }}
+			style={{
+				width: "50vw",
+				height: "75vh",
+				overflowY: "hidden",
+				overflowX: "hidden",
+			}}
 			onHide={() => props.setShow(false)}
 		>
 			<TabView
 				activeIndex={activeIndex}
 				onTabChange={(e) => setActiveIndex(e.index)}
+				className="sticky-nav"
 			>
 				<TabPanel header="Leaderboard">
-					<LeaderBoard />
+					<ScrollPanel style={{ width: "auto", height: "500px" }}>
+						<LeaderBoard />
+					</ScrollPanel>
 				</TabPanel>
 				<TabPanel header="Weekly Kata">
-					<CodewarsKata />
+					<ScrollPanel style={{ width: "auto", height: "500px" }}>
+						<CodewarsKata />
+					</ScrollPanel>
 				</TabPanel>
 				<TabPanel header="Submissions">
-					<Submissions />
+					<ScrollPanel style={{ width: "auto", height: "500px" }}>
+						<Submissions />
+					</ScrollPanel>
 				</TabPanel>
 			</TabView>
 		</Dialog>
